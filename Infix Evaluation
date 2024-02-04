@@ -1,0 +1,86 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Stack;
+
+public class InfixEvaluation {
+    public static int priority(char c)
+    {
+        switch (c)
+        {
+            case '^' : return 3;
+            case '/' :
+            case '*' : return 2;
+            case '+':
+            case '-' :return 1;
+            default:
+                return 0;
+        }
+    }
+    public static int opreation(int val1,int val2,char optr)
+    {
+        switch (optr)
+        {
+            case '^' : return (int)Math.pow((double)val1,(double)val2);
+            case '/' : return val1/val2;
+            case '*' : return val1*val2;
+            case '+': return val1+val2;
+            case '-' :return val1-val2;
+            default:
+                return 0;
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String s=br.readLine();
+
+        Stack<Integer> operand=new Stack<>();
+        Stack<Character> operator=new Stack<>();
+        for(int i=0;i<s.length();i++)
+        {
+            char ch=s.charAt(i);
+            if(ch=='(')
+            {
+                operator.push(ch);
+            }
+            else if (Character.isDigit(ch))
+            {
+                operand.push(ch-'0');
+            }
+            else if(ch=='+' || ch=='-' || ch=='*' || ch=='/' || ch=='^' )
+            {
+                while(operator.size()>0 && priority(ch)<=priority(operator.peek()) && operator.peek()!='(')
+                {
+                    char optr=operator.pop();
+                    int val2=operand.pop();
+                    int val1=operand.pop();
+                    operand.push(opreation(val1,val2,optr));
+                }
+                operator.push(ch);
+
+            } else if (ch==')') {
+                while(operator.peek()!='(')
+                {
+                    char optr=operator.pop();
+                    int val2=operand.pop();
+                    int val1=operand.pop();
+                    operand.push(opreation(val1,val2,optr));
+                }
+                operator.pop();
+            }
+
+
+        }
+
+        while(operator.size()!=0)
+        {
+            char optr=operator.pop();
+            int val2=operand.pop();
+            int val1=operand.pop();
+            operand.push(opreation(val1,val2,optr));
+        }
+        System.out.println(operand.peek());
+//        System.out.println(Math.pow(2,5));
+    }
+}
