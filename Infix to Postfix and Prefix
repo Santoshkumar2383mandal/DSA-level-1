@@ -1,0 +1,107 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Stack;
+
+public class InfixConversion {
+    public static int priority(char c)
+    {
+        switch (c)
+        {
+            case '^' : return 3;
+            case '/' :
+            case '*' : return 2;
+            case '+':
+            case '-' :return 1;
+            default:
+                return 0;
+        }
+    }
+    public  static void opretion(Stack<Character> operator,Stack<String> prefix,Stack<String> postfix)
+    {
+        char optr = operator.pop();
+
+        String val2 = prefix.pop();  // peek operands treats as  2nd value while after that whill be first value
+        String val1 = prefix.pop();
+
+        String sval2=postfix.pop();
+        String svaal1=postfix.pop();
+
+        prefix.push(optr+val1+val2); // for prefix first operator + operans1 + operads2
+        postfix.push(svaal1+sval2+optr); // for prefix first  operans1 + operads2 + operator
+    }
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String s = br.readLine();
+
+        Stack<String> prefix = new Stack<>();
+        Stack<String> postfix=new Stack<>();
+        Stack<Character> operator = new Stack<>();
+        for(int i=0;i<s.length();i++)
+        {
+            char ch=s.charAt(i);
+            if(ch=='(')
+            {
+                operator.push(ch);
+            }
+            else if (ch=='+' || ch=='-' || ch=='/' || ch=='*' || ch=='^') {
+                while (operator.size()!=0 && operator.peek()!='(' && priority(ch)<=priority(operator.peek()))
+                {
+//                    char optr = operator.pop();
+//                    String val2 = infix.pop();
+//                    String val1 = infix.pop();
+//
+//                    String sval2=postfix.pop();
+//                    String svaal1=postfix.pop();
+//
+//                    infix.push(optr+val1+val2);
+//                    postfix.push(svaal1+sval2+optr);
+
+                    opretion(operator,prefix,postfix);
+
+                }
+                operator.push(ch);   //after completing push the lower priority operator
+
+            }
+            else if (ch==')') {
+                while (operator.peek()!='(')
+                {
+//                    char optr = operator.pop();
+
+//                    String val2 = infix.pop();
+//                    String val1 = infix.pop();
+//                    String sval2=postfix.pop();
+//                    String svaal1=postfix.pop();
+//
+//                    infix.push(optr+val1+val2);
+//                    postfix.push(svaal1+sval2+optr);
+                    opretion(operator,prefix,postfix);//by using operation method
+                }
+                operator.pop();
+
+            }
+            else  // push the other character digits symbols
+            {
+               prefix.push(ch+"");
+                postfix.push(ch+"");
+            }
+        }
+
+        while(operator.size()!=0)
+        {
+//            char optr = operator.pop();
+//
+//            String val2 = prefix.pop();
+//            String val1 = prefix.pop();
+//
+//            String sval2=postfix.pop();
+//            String svaal1=postfix.pop();
+//
+//            postfix.push(optr+val1+val2);
+//            postfix.push(svaal1+sval2+optr);
+            opretion(operator,prefix,postfix); //by using operation method
+        }
+        System.out.println(prefix.peek());
+        System.out.println(postfix.peek());
+    }
+}
